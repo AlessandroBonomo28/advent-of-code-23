@@ -13,7 +13,6 @@ def parse_card(card):
     global instances
     header,body = card.split(":")
     id = int(header[header.find(" ")+1:])
-    instances[str(id)] = instances.get(str(id),0) + 1
     body = body.strip()
     matching_numbers = body.split("|")[0].strip().replace("  "," ").split(" ")
     guesses = body.split("|")[1].strip().replace("  "," ").split(" ")
@@ -29,31 +28,37 @@ def count_matches(k,array):
 
 
 sum_points = 0
-with open("calibration.txt") as f:
+with open("input.txt") as f:
     cards = f.readlines()
     for card in cards:
         matching_numbers, guesses, id = parse_card(card)
+
+        if str(id) not in instances:
+            instances[str(id)] = 1
+
         matches=0
         for i in set(guesses): # without duplicates
             if count_matches(i,matching_numbers) > 0:
                 matches += 1
+        
         if matches == 0:
             points = 0
-            instances[str(id)] = instances.get(str(id),1)**2
         else:
             points = 2**(matches-1)
             for i in range(0,matches):
-                print("id: ",id," i: ",id+1+i)
+                #print("id: ",id," i: ",id+1+i)
                 if str(id+1+i) not in instances:
                     instances[str(id+1+i)] = 1
-                else:    
-                    instances[str(id+1+i)] = instances[str(id+1+i)]*matches + 1
-            print(instances)
-            print("")
+                instances[str(id+1+i)] = instances[str(id)] +instances[str(id+1+i)]
+            #print(instances)
+            #print("")
 
         #print("points: ",points)
         sum_points += points
 
+sum_instances = 0
 print("total: ",sum_points)
 for k,v in instances.items():    
-    print(k,v)
+    sum_instances += v
+    #print(k,v)
+print("sum_instances: ",sum_instances)
