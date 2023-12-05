@@ -115,9 +115,9 @@ for map_name in maps:
 start_time = time.time()
 
 progress = 0
-
+final_min_location = get_location(maps, seeds[0])
 def calc_min_location(maps,range_start,range_length):
-    global progress
+    global progress, final_min_location
     time_seed_start = time.time()
     for i in range(0, range_length):
         i_seed = range_start + i
@@ -131,11 +131,13 @@ def calc_min_location(maps,range_start,range_length):
     exec_seed_time = time.time() - time_seed_start
     exec_seed_time = time.strftime('%H:%M:%S', time.gmtime(exec_seed_time))
     progress += 1
+    if min_location < final_min_location:
+        final_min_location = min_location
     print(f"[THREAD] Range ({range_start}-{range_start+range_length}) calculated in time {exec_seed_time}. Min location is {min_location}.")
     print(f"[THREAD] Progress: {progress}/{len(seeds)//2}")
     
 
-
+threads = []
 seed_index = 0
 seed_range_start = 0
 for seed in seeds:
@@ -145,9 +147,15 @@ for seed in seeds:
         print(f"Starting thread for calculating seed range ({seed_range_start}-{seed_range_start+seed})")
         thread = threading.Thread(target=calc_min_location, args=(maps,seed_range_start,seed,))
         thread.start()
+        threads.append(thread)
     seed_index += 1
     
+print("Waiting for threads to finish...")
+# wait for all thread
+while threading.active_count() > 1:
+    time.sleep(1)
 
 total_time = time.time() - start_time
 total_time = time.strftime('%H:%M:%S', time.gmtime(total_time))
 print(f"Total time: {total_time}")
+print(f"Final min location: {final_min_location}")
