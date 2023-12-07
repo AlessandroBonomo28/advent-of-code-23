@@ -1,0 +1,25 @@
+32T3K 765
+T55J5 684 -> T555 three + J = four of a kind 
+KK677 28
+KTJJT 220  -> KTT -> pair + JJ = four of a kind
+QQQJA 483
+
+7 casi
+
+1234J -> 12344 # high hand (1->2)
+
+1134J -> 11341 # pair (2->4)
+
+1122J -> 11222 # two pairs (3->6)
+
+1112J -> 11121 # three kind NO!!! diventa full house (4->6)
+1111J -> 11111 # four kind (5->7)
+11122 -> 11122 # full house
+JJJ22
+111JJ
+
+JJJJJ -> 22222 #poker
+
+
+se hai high hand
+
