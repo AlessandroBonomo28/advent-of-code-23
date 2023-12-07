@@ -30,10 +30,12 @@ def parse_match(match):
     if length == 5:
         power = 1 # high card
     elif length == 1:
-        power = 6 # five of a kind
+        power = 7 # five of a kind
     else:
         if 4 in occourrences_hand.values():
-            power = 5 # full house
+            power = 6 # full house
+        elif 3 in occourrences_hand.values() and pairs == 1:
+            power = 5
         elif 3 in occourrences_hand.values():
             power = 4 # three of a kind
         elif pairs == 1:
