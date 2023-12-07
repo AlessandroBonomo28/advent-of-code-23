@@ -23,3 +23,26 @@ JJJJJ -> 22222 #poker
 
 se hai high hand
 
+1111
+
+11
+
+1212
+
+
+
+result 
+
+
+ x > 248736984 
+  x < 248890587
+
+
+
+  1: high card 12345
+  2: one pair 33124
+  3: two pairs 33221
+  4: three of a kind 33321
+  5: full house 33322
+  6: four of a kind 33332
+  7: five of kind (poker) 33333
