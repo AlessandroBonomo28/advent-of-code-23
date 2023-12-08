@@ -44,10 +44,11 @@ def navigate(cur_index,steps,network, indications,end_node_label):
     else:
         current_node_label = network[index][1][1]
     index = find_index_of(current_node_label,network)
-    if current_node_label == end_node_label:
-        return -1
+    #if current_node_label == end_node_label:
+    if current_node_label[len(current_node_label)-1] == "Z":
+        return index, True
     else:
-        return index
+        return index, False
     
 network = []
 line_count = 0
@@ -61,13 +62,37 @@ with open(filename) as f:
             network.append(node)
         line_count+=1    
 
-starting_indexes = find_index_of_starting_nodes(network)
+start_indexes = find_index_of_starting_nodes(network)
+cur_indexes = start_indexes.copy()
 steps = 0
-index = starting_indexes[0]
-end_node_label = network[index][0].replace("A","Z")
+end_node_labels =  []
+terminations = []
+for i in range(0,len(cur_indexes)):
+    end_node_labels.append(network[cur_indexes[i]][0].replace("A","Z"))
+    #print(end_node_labels[i], network[cur_indexes[i]][0])
+    terminations.append(False)
+
+first_step_times = {}
+
 while True:
-    index = navigate(index,steps,network,indications,end_node_label)
+    for i in range(0,len(cur_indexes)):
+        if terminations[i]:
+            continue
+        cur_indexes[i],terminations[i] = navigate(cur_indexes[i],steps,network,indications,end_node_labels[i])
+        if terminations[i]:
+            first_step_times[network[start_indexes[i]][0]] = steps+1
     steps += 1
-    if index == -1:
+    if terminations.count(True) == len(terminations):
         break
-print(steps)
+#print(first_step_times)
+
+values = list(first_step_times.values())
+print("termination steps ",values)
+
+# calcola minimo comune multiplo
+from functools import reduce
+from math import gcd
+def mcm(denominators):
+    return reduce(lambda a,b: a*b // gcd(a,b), denominators)
+
+print(mcm(values))

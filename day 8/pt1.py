@@ -53,4 +53,7 @@ with open(filename) as f:
             network.append(node)
         line_count+=1    
 
+from plot import plot_nicely, plot_default
+
+#plot_nicely(network)
 print(navigate(network, indications))
