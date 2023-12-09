@@ -35,17 +35,13 @@ fn main() {
                     .collect();
                 
                 let sub_sequence = create_sub_sequence(&sequence);
-                let sub_sequence2: Vec<i32>= Vec::new();
-                //let sub_sequence2 = create_sub_sequence(&sub_sequence);
+                let sub_sequence2 = create_sub_sequence(&sub_sequence);
                 println!("Main sequence:");
                 dbg!(sequence); // print debug info
                 println!("Subsequence:");
-                dbg!(sub_sequence); 
-                println!("Subsequence 2:");
-                dbg!(sub_sequence2); 
-                let sum : i32 = sub_sequence.iter().sum();
-                //let is_zero = is_zero_sequence(&sub_sequence2);
-                //println!("Is zero sequence: {}", is_zero);
+                dbg!(sub_sequence);
+                let res : bool = is_zero_sequence(&sub_sequence2);
+                println!("is zero: {}", res);
                 println!();
             }
         }
