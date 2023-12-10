@@ -38,17 +38,19 @@ lookup = {}
 directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
 def dfs(map, pos, path = []):
-    print(f"dfs({get_sybmol_at(pos)})")
+    #print(f"dfs({get_sybmol_at(pos)})")
     global lookup
     for dir in directions:
-        if is_allowed_to_move(pos, dir):
+        allowed = is_allowed_to_move(pos, dir)
+        #print(f" allow to move {dir} from {pos}: {allowed}")
+        if allowed:
             next_pos = vec_sum(pos, dir)
             status = lookup.get(next_pos, 'new')
             if status == 'visited' or status == 'seen':
                 continue
             else:
                 lookup[next_pos] = 'visited'
-                print(f"visited {get_sybmol_at(next_pos)}")
+                #print(f"visited {get_sybmol_at(next_pos)}")
                 path.append(next_pos)
                 dfs(map, next_pos, path)
     return path
@@ -74,8 +76,9 @@ search_directions = {
 
 def get_sybmol_at(pos):
     global pipe_map
+    h = len(pipe_map)
     x,y = pos
-    return pipe_map[y][x]
+    return pipe_map[h-y-1][x]
 
 def vec_sum(pos, direction):
     x,y = pos
@@ -107,7 +110,7 @@ with open(filename, 'r') as file:
             start_pos = (x,y)
         pipe_map.append(line)
         y += 1
-
+start_pos = (x,y-start_pos[1]-1)
 print("Start pos: " + str(start_pos))
 
 # genera n simboli a caso e vedi se sono compatibili, poi stampa
@@ -158,6 +161,8 @@ for i in range(n):
 
 sys.setrecursionlimit(10000)
 
-
-print_compatibility(pipe_south_west_symbol,vertical_pipe_symbol,(0,-1))
-#print(len(start_dfs(pipe_map, start_pos)))
+#start_pos = (1,3)
+#s = get_sybmol_at((3,1))
+path = start_dfs(pipe_map, start_pos)
+print(path)
+print(len(path))
