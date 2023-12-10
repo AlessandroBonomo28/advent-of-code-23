@@ -20,8 +20,12 @@ fn create_sub_sequence(main_seq :&[i32]) -> Vec<i32> {
 }
 
 fn is_zero_sequence(sequence: &[i32]) -> bool {
-    let sum: i32 = sequence.iter().sum();
-    sum == 0
+    for i in 0..sequence.len() {
+        if sequence[i] != 0 {
+            return false;
+        }
+    }
+    true
 }
 
 fn predict_next_value(sequences: &[Vec<i32>]) -> i32 {
@@ -55,12 +59,10 @@ fn main() {
                 for i in 1..sequence.len() {
                     let sub_sequence = create_sub_sequence(&sequences[i-1]);
                     let is_zero : bool = is_zero_sequence(&sub_sequence);
+                    sequences.push(sub_sequence.clone());
                     if is_zero {
-                        sequences.push(sub_sequence.clone());
                         break;
-                    } else {
-                        sequences.push(sub_sequence.clone());
-                    }
+                    } 
                 }
 
                 let prediction : i32 = predict_next_value(&sequences);

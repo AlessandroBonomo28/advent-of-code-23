@@ -10,13 +10,18 @@ def create_sub_sequence(main_seq):
     return sub_sequence
 
 def is_zero_sequence(sequence):
-    return sum(sequence) == 0
+    for i in range(len(sequence)):
+        if sequence[i] != 0:
+            return False
+    return True
 
 def predict_next_value(sequences):
-    total_sum = 0
+    sum = 0
     for i in range(len(sequences)):
-        total_sum += sequences[i][-1]
-    return total_sum
+        sum=sequences[i][0] -sum
+    return sum
+
+
 
 def main():
     args = sys.argv
@@ -29,19 +34,17 @@ def main():
 
     with open(filename, 'r') as file:
         for line in file:
-            values = [int(s) for s in line.split()]
-            
-            sequence = values
-            sequences = [sequence.copy()]
-            for i in range(1, len(sequence)):
+            line = line.strip()
+            main_sequence = [int(x) for x in line.split(" ")]
+            sequences = [main_sequence]
+            i=1
+            while True:
                 sub_sequence = create_sub_sequence(sequences[i - 1])
-                is_zero = is_zero_sequence(sub_sequence)
-                if is_zero:
-                    sequences.append(sub_sequence.copy())
+                sequences.append(sub_sequence)
+                if is_zero_sequence(sub_sequence):
                     break
-                else:
-                    sequences.append(sub_sequence.copy())
-
+                i += 1
+            sequences.reverse()
             prediction = predict_next_value(sequences)
             total += prediction
 
