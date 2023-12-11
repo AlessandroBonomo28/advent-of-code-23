@@ -37,7 +37,7 @@ lookup = {}
 
 directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
-def dfs(map, pos, path = []):
+def dfs(pos, path = []):
     #print(f"dfs({get_sybmol_at(pos)})")
     global lookup
     for dir in directions:
@@ -52,13 +52,39 @@ def dfs(map, pos, path = []):
                 lookup[next_pos] = 'visited'
                 #print(f"visited {get_sybmol_at(next_pos)}")
                 path.append(next_pos)
-                dfs(map, next_pos, path)
+                dfs(next_pos, path)
     return path
+
+def dfs_iterative(pos):
+    global lookup
+    original_pos = (pos[0], pos[1])
+    stack = [pos]
+    steps = 1
+    while len(stack) > 0:
+        pos = stack.pop()
+        visit_count = 0
+        for dir in directions:
+            allowed = is_allowed_to_move(pos, dir)
+            if allowed:
+                next_pos = vec_sum(pos, dir)
+                status = lookup.get(next_pos, 'new')
+                if status == 'visited' or status == 'seen':
+                    if next_pos == original_pos:
+                        visit_count += 1
+                    continue
+                else:
+                    visit_count += 1
+                    lookup[next_pos] = 'visited'
+                    stack.append(next_pos)
+                    steps += 1
+        if visit_count == 0:
+            steps -= 1
+    return steps
 
 def start_dfs(map, pos):
     global lookup
     lookup[pos] = 'visited'
-    return dfs(map, pos, [pos])
+    return dfs_iterative(pos)
 
 filename = sys.argv[1]
 if filename is None:
@@ -168,6 +194,6 @@ sys.setrecursionlimit(10000)
 
 #start_pos = (1,3)
 #s = get_sybmol_at((3,1))
-path = start_dfs(pipe_map, start_pos)
-print(path)
-print(len(path))
+count = start_dfs(pipe_map, start_pos)
+print(count//2+1)
+
