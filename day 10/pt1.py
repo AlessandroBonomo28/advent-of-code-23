@@ -236,14 +236,8 @@ if not silent:
 out_path = []
 
 
-# set all compatibilities = []
-
-
-
-
 
 compatibility[ground_symbol]= directions
-
 
 
 for i in range(2):
@@ -269,8 +263,9 @@ if not silent:
     print("")
     print("Outside path:")
     draw_path(out_path,pipe_map)
-
-trapped_dots = total_dots - count_dots_in_path(out_path,pipe_map)
+outside_dots = count_dots_in_path(out_path,pipe_map)
+trapped_dots = total_dots - outside_dots
 print(Fore.RED + 'Day 10 AoC - DFS Flood Fill' + Style.RESET_ALL)
 print(Fore.YELLOW +f"Farthest position: {len(path)//2}"+ Style.RESET_ALL)
 print(Fore.BLUE +f"Trapped dots: {trapped_dots}" + Style.RESET_ALL)
+print(Fore.GREEN +f"Outside dots: {outside_dots}" + Style.RESET_ALL)
