@@ -78,7 +78,12 @@ def get_sybmol_at(pos):
     global pipe_map
     h = len(pipe_map)
     x,y = pos
-    return pipe_map[h-y-1][x]
+    y = h-y-1
+    if y >= h or y < 0:
+        return '.'
+    if x >= len(pipe_map[0]) or x < 0:
+        return '.'
+    return pipe_map[y][x]
 
 def vec_sum(pos, direction):
     x,y = pos
