@@ -60,6 +60,7 @@ def dfs_iterative(pos):
     original_pos = (pos[0], pos[1])
     stack = [pos]
     steps = 1
+    path = [pos]
     while len(stack) > 0:
         pos = stack.pop()
         visit_count = 0
@@ -77,9 +78,11 @@ def dfs_iterative(pos):
                     lookup[next_pos] = 'visited'
                     stack.append(next_pos)
                     steps += 1
+                    path.append(next_pos)
         if visit_count == 0:
             steps -= 1
-    return steps
+
+    return path
 
 def start_dfs(map, pos):
     global lookup
@@ -194,6 +197,31 @@ sys.setrecursionlimit(10000)
 
 #start_pos = (1,3)
 #s = get_sybmol_at((3,1))
-count = start_dfs(pipe_map, start_pos)
-print(count//2+1)
+path = start_dfs(pipe_map, start_pos)
+count = len(path)
+#print(f"farthest position: {count//2}")
+#print(path)
 
+from colorama import Fore, Style
+
+silent = True if len(sys.argv) > 2 and sys.argv[2] == 'silent' else False
+
+if not silent:
+    # Draw map
+    x = 0
+    y = 0
+    h = len(pipe_map)
+    for line in pipe_map:
+        x=0
+        for c in line:
+            if (x,h-y-1) in path:
+                print(Fore.GREEN + c + Style.RESET_ALL,end="")
+            else:
+                print(c, end="")
+            x += 1
+        print("")
+        y+=1
+
+# print red hello
+print(Fore.RED + 'Day 10 AoC - DFS' + Style.RESET_ALL)
+print(f"Farthest position: {count//2}")
