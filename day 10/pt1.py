@@ -177,7 +177,7 @@ def draw_path(path,pipe_map):
             elif c == ground_symbol:
                 print(Fore.BLUE + c + Style.RESET_ALL,end="")
             else:
-                print("X", end="")
+                print(Fore.RED + c + Style.RESET_ALL,end="")
             x += 1
         print("")
         y+=1
