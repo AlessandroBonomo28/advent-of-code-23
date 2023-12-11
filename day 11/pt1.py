@@ -111,19 +111,22 @@ for i in range(0,len(galaxies_pos)-1):
         #math.sqrt((x1-x2)**2 + (y1-y2)**2)
        
         """if x1 > x2:
-            x1 += empty_h
+            x1 -= empty_h
         else:
-            x2 += empty_h
+            x2 -= empty_h
 
         if y1 > y2:
-            y1 += empty_v**2
+            y1 -= empty_v
         else:
-            y2 += empty_v**2"""
-        dist = distance_stepped(x1,y1,x2,y2)
-        print(f" dist {dist}")
-        dist +=(empty_h + 3*empty_v)
+            y2 -= empty_v"""
+        dist = distance_stepped(x1,y1,x2,y2) - empty_h - empty_v
+        
+        contribute = distance_stepped(0,0,2*empty_h,2*empty_v)
+        #print(f" dist {dist} and contribute {contribute}")
+        dist += contribute
+        
         sum+=dist
-        print(f"Dist between {galaxies_pos[i]} and {galaxies_pos[j]} is {dist}, empty galaxies between: h {empty_h}, v {empty_v}")
+        #print(f"Dist between {galaxies_pos[i]} and {galaxies_pos[j]} is {dist}, empty galaxies between: h {empty_h}, v {empty_v}")
 
         count += 1
 
