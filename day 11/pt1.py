@@ -11,23 +11,13 @@ def print_galaxy(map, galaxies_pos, expansion_h=[], expansion_v=[]):
     for y in range(len(map)-1, -1, -1):
         print(f"{(h-y-1):03d} ", end='')
         for x in range(len(map[y])):
-            dot_color = Fore.BLUE if x in expansion_v or y in expansion_h else Fore.WHITE
-            if dot_color == Fore.WHITE:
-                symbol = "."
-            elif x in expansion_v and y in expansion_h:
-                symbol = "+"
-            elif x in expansion_v:
-                symbol = "|"
-            elif y in expansion_h:
-                symbol = "-"
-            else:
-                symbol = "?"
+            dot_color = Fore.WHITE
             
             if (x,h-y-1) in galaxies_pos:
                 indexof = galaxies_pos.index((x,h-y-1))+1
                 print(Fore.YELLOW + "#" + Style.RESET_ALL, end='')
             else:
-                print(dot_color+symbol+ Style.RESET_ALL, end='')
+                print(dot_color+'.'+ Style.RESET_ALL, end='')
         print()
 
 
@@ -42,7 +32,8 @@ with open(filename) as f:
         galaxy_map.append(line)
         if line.count('#') == 0:
             horizontal_expansion_index_lines.append(h)
-
+            galaxy_map.append(line)
+            h += 1
         h += 1
 
 horizontal_expansion_index_lines = list(map(lambda y: h-y-1, horizontal_expansion_index_lines))
@@ -56,6 +47,13 @@ for x in range(len(galaxy_map[0])):
             count += 1
     if count == 0:
         vertical_expansion_index_lines.append(x)
+
+count = 0
+for x in vertical_expansion_index_lines:
+    for y in range(h):
+        galaxy_map[y] = galaxy_map[y][:x+count] + '.' + galaxy_map[y][x+count:]
+    count += 1
+
 
 print(f"Vertical lines index to expand: {vertical_expansion_index_lines}")
 
@@ -106,24 +104,9 @@ for i in range(0,len(galaxies_pos)-1):
     for j in range(i+1,len(galaxies_pos)):
         x1,y1 = galaxies_pos[i]
         x2,y2 = galaxies_pos[j]
-        empty_h,empty_v = count_empty_galaxy_between(galaxies_pos[i],galaxies_pos[j],
-                        horizontal_expansion_index_lines,vertical_expansion_index_lines)
-        #math.sqrt((x1-x2)**2 + (y1-y2)**2)
-       
-        """if x1 > x2:
-            x1 -= empty_h
-        else:
-            x2 -= empty_h
-
-        if y1 > y2:
-            y1 -= empty_v
-        else:
-            y2 -= empty_v"""
-        dist = distance_stepped(x1,y1,x2,y2) - empty_h - empty_v
         
-        contribute = distance_stepped(0,0,2*empty_h,2*empty_v)
-        #print(f" dist {dist} and contribute {contribute}")
-        dist += contribute
+        dist = distance_stepped(x1,y1,x2,y2) 
+        
         
         sum+=dist
         #print(f"Dist between {galaxies_pos[i]} and {galaxies_pos[j]} is {dist}, empty galaxies between: h {empty_h}, v {empty_v}")
