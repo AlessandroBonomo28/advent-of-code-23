@@ -1,4 +1,6 @@
 import sys
+from colorama import Fore, Style
+import random
 """
 
 | is a vertical pipe connecting north and south.
@@ -29,7 +31,8 @@ compatibility = {
     pipe_south_west_symbol: [(0, -1), (-1, 0)],
     pipe_south_east_symbol: [(0, -1), (1, 0)],
     ground_symbol: [],
-    start_symbol: [(0, -1), (0, 1), (-1, 0), (1, 0)]
+    start_symbol: [(0, -1), (0, 1), (-1, 0), (1, 0)],
+    "X":[]
 }
 
 lookup = {}
@@ -57,37 +60,32 @@ def dfs(pos, path = []):
 
 def dfs_iterative(pos):
     global lookup
-    original_pos = (pos[0], pos[1])
     stack = [pos]
-    steps = 1
     path = [pos]
     while len(stack) > 0:
         pos = stack.pop()
-        visit_count = 0
         for dir in directions:
             allowed = is_allowed_to_move(pos, dir)
             if allowed:
                 next_pos = vec_sum(pos, dir)
                 status = lookup.get(next_pos, 'new')
                 if status == 'visited' or status == 'seen':
-                    if next_pos == original_pos:
-                        visit_count += 1
                     continue
                 else:
-                    visit_count += 1
                     lookup[next_pos] = 'visited'
                     stack.append(next_pos)
-                    steps += 1
                     path.append(next_pos)
-        if visit_count == 0:
-            steps -= 1
-
     return path
 
-def start_dfs(map, pos):
+def start_dfs(pos, iterative=True):
     global lookup
+    lookup = {}
     lookup[pos] = 'visited'
-    return dfs_iterative(pos)
+    if not iterative:
+        sys.setrecursionlimit(10000)
+        return dfs(pos)
+    else:
+        return dfs_iterative(pos)
 
 filename = sys.argv[1]
 if filename is None:
@@ -96,12 +94,6 @@ if filename is None:
 
 pipe_map = []
 
-search_directions = {
-    "S":(0, -1), # south
-    "E":(1, 0),  # east
-    "N":(0, 1),   # north
-    "W":(-1, 0)  # west
-}
 
 def get_sybmol_at(pos):
     global pipe_map
@@ -109,9 +101,9 @@ def get_sybmol_at(pos):
     x,y = pos
     y = h-y-1
     if y >= h or y < 0:
-        return '.'
+        return 'X'
     if x >= len(pipe_map[0]) or x < 0:
-        return '.'
+        return 'X'
     return pipe_map[y][x]
 
 def vec_sum(pos, direction):
@@ -120,6 +112,7 @@ def vec_sum(pos, direction):
     return (x+dx, y+dy)
 
 def is_compatible(current_symbol, next_symbol,direction):
+    global compatibility
     opposite_direction = (-direction[0], -direction[1])
     if direction in compatibility[current_symbol] and opposite_direction in compatibility[next_symbol]:
         return True
@@ -134,20 +127,6 @@ def is_allowed_to_move(your_pos, direction):
     
 
 
-start_pos = None
-y = 0
-with open(filename, 'r') as file:
-    for line in file:
-        line = line.strip()
-        if start_symbol in line:
-            x = line.index(start_symbol)
-            start_pos = (x,y)
-        pipe_map.append(line)
-        y += 1
-start_pos = (x,y-start_pos[1]-1)
-print("Start pos: " + str(start_pos))
-
-# genera n simboli a caso e vedi se sono compatibili, poi stampa
 
 def print_compatibility(a,b,direction):
     """
@@ -183,45 +162,115 @@ def print_compatibility(a,b,direction):
     print("")
 
 
-symbols = [vertical_pipe_symbol, horizontal_pipe_symbol, pipe_north_east_symbol, pipe_north_west_symbol, pipe_south_west_symbol, pipe_south_east_symbol, ground_symbol, start_symbol]
-import random
-n = 0
-for i in range(n):
-    a = random.choice(symbols)
-    b = random.choice(symbols)
-    random_direction = random.choice(list(search_directions.values()))
-    print_compatibility(a,b,random_direction)
 
-
-sys.setrecursionlimit(10000)
-
-#start_pos = (1,3)
-#s = get_sybmol_at((3,1))
-path = start_dfs(pipe_map, start_pos)
-count = len(path)
-#print(f"farthest position: {count//2}")
-#print(path)
-
-from colorama import Fore, Style
-
-silent = True if len(sys.argv) > 2 and sys.argv[2] == 'silent' else False
-
-if not silent:
-    # Draw map
+def draw_path(path,pipe_map):
+    h = len(pipe_map)
     x = 0
     y = 0
-    h = len(pipe_map)
     for line in pipe_map:
         x=0
         for c in line:
-            if (x,h-y-1) in path:
+            if c == start_symbol and (x,h-y-1) in path:
+                print(Fore.YELLOW + c + Style.RESET_ALL,end="")
+            elif (x,h-y-1) in path:
                 print(Fore.GREEN + c + Style.RESET_ALL,end="")
+            elif c == ground_symbol:
+                print(Fore.BLUE + c + Style.RESET_ALL,end="")
             else:
-                print(c, end="")
+                print("X", end="")
             x += 1
         print("")
         y+=1
 
-# print red hello
-print(Fore.RED + 'Day 10 AoC - DFS' + Style.RESET_ALL)
-print(f"Farthest position: {count//2}")
+def count_dots_in_path(path,map):
+    total_dots = 0
+    h = len(map)
+    x = 0
+    y = 0
+    for line in map:
+        x=0
+        for c in line:
+            if c == ground_symbol and (x,h-y-1) in path:
+                total_dots += 1
+            x += 1
+        y+=1
+    return total_dots
+
+symbols = [vertical_pipe_symbol, horizontal_pipe_symbol, pipe_north_east_symbol, pipe_north_west_symbol, pipe_south_west_symbol, pipe_south_east_symbol, ground_symbol, start_symbol]
+
+n = 0
+for i in range(n):
+    a = random.choice(symbols)
+    b = random.choice(symbols)
+    random_direction = random.choice(directions)
+    print_compatibility(a,b,random_direction)
+
+total_dots = 0
+
+start_pos = None
+y = 0
+with open(filename, 'r') as file:
+    for line in file:
+        line = line.strip()
+        total_dots += line.count(ground_symbol)
+        if start_symbol in line:
+            x = line.index(start_symbol)
+            start_pos = (x,y)
+        pipe_map.append(line)
+        y += 1
+start_pos = (x,y-start_pos[1]-1)
+print("Start pos: " + str(start_pos))
+
+path = start_dfs(start_pos)
+
+silent = True if len(sys.argv) > 2 and sys.argv[2] == 'silent' else False
+
+
+h = len(pipe_map)
+w = len(pipe_map[0])
+
+
+if not silent:
+    draw_path(path,pipe_map)
+
+out_path = []
+
+
+# set all compatibilities = []
+
+
+
+
+
+compatibility[ground_symbol]= directions
+
+
+
+for i in range(2):
+    if i == 0:
+        y = 0
+    else:
+        y = h-1
+    for x in range(w):
+        if (x,y) not in out_path and (x,y) not in path:
+            out_path += start_dfs((x,y))
+    if i == 0:
+        x = 0
+    else:
+        x = w-1
+    for y in range(h):
+        if (x,y) not in out_path and (x,y) not in path:
+            out_path += start_dfs((x,y))
+            
+out_path = list(set(out_path) - set(path))
+
+
+if not silent:
+    print("")
+    print("Outside path:")
+    draw_path(out_path,pipe_map)
+
+trapped_dots = total_dots - count_dots_in_path(out_path,pipe_map)
+print(Fore.RED + 'Day 10 AoC - DFS Flood Fill' + Style.RESET_ALL)
+print(Fore.YELLOW +f"Farthest position: {len(path)//2}"+ Style.RESET_ALL)
+print(Fore.BLUE +f"Trapped dots: {trapped_dots}" + Style.RESET_ALL)
